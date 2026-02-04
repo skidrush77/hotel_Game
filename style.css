@@ -27,14 +27,21 @@ body {
 }
 
 #game-app {
-    /* Mobile Aspect Ratio 9:16 */
+    /* Responsive Logic - Scale Down */
+    /* Maintain 9:16 aspect ratio */
     aspect-ratio: 9 / 16;
+
+    /* Base Size Logic: Try to be 90% of height, but never wider than 95% of width */
     height: 90vh;
     width: auto;
-    /* Remove constraints that might limit width incorrectly */
-    max-width: none;
-    max-height: none;
 
+    /* Strict Safety constraints */
+    max-width: 95vw;
+    max-height: 90vh;
+
+    /* If screen is extremely wide but short, or tall but narrow, this ensures fit */
+
+    /* Style */
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(3px);
     position: relative;
@@ -46,7 +53,9 @@ body {
 }
 
 header {
-    padding: 15px;
+    height: 10%;
+    /* Relative height */
+    padding: 0 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -54,48 +63,36 @@ header {
     color: var(--primary-gold);
     box-shadow: 0 2px 5px var(--shadow-color);
     z-index: 10;
+    border-radius: 20px 20px 0 0;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    /* Determine max width based on container to avoid overflow */
-    max-width: 60%;
+    max-width: 50%;
 }
 
 .logo img {
-    /* Height auto to respect aspect ratio */
     height: auto;
+    max-height: 6vh;
+    /* Scale with screen height */
     width: auto;
-    /* Ensure it doesn't exceed container in a weird way */
     max-width: 100%;
-    /* User suggested max-height approx 60px equivalent or responsive? 
-       User said: "Adjust logo image width to fit container (max-width: 80% approx) and height auto".
-       Actually let's cap the height so it doesn't explode on PC, or set max-width.
-       Let's stick to height constraint as primary but allow width to flow, 
-       OR if user wants it "responsive", we can set max-height but usually header logos are fixed height.
-       User specific request: "Logo image width to fit container (max-width: 80% approx) and height auto".
-       This implies they might want a big logo if width allows. 
-       Let's try a balanced approach: max-height for headers usually better, but let's follow user 'height auto' 
-       and constrain width. */
-    max-width: 250px;
-    /* Reasonable max width for a header logo */
-    max-height: 80px;
-    /* Cap so it doesn't take too much vertical space */
     display: block;
 }
 
 .score-board {
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 3vmin;
+    /* Responsive font sizing */
 }
 
 /* Game Area (Shelves) */
 #game-area {
     flex: 1;
     overflow: hidden;
-    /* visual cleanup */
-    padding: 20px;
+    /* No scroll needed if everything scales down */
+    padding: 2vmin;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -106,50 +103,54 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Center them vertically as a pack */
-    gap: 5px;
-    /* Minimal gap to keep them close but distinct */
+    gap: 1vh;
+    /* Relative gap */
     align-items: center;
     width: 100%;
 }
 
 .shelf {
-    width: 90%;
-    height: 70px;
-    /* 70% transparent means 30% opacity (0.3 alpha) */
+    width: 100%;
+    /* Fill container width (minus padding) */
+    height: 14%;
+    /* Fixed percentage height for shelves */
+
     background: linear-gradient(to bottom, rgba(160, 82, 45, 0.3), rgba(139, 69, 19, 0.3));
-    border-radius: 5px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    /* Reduced shadow intensity for transparent look */
+    border-radius: 1vmin;
+    box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-around;
     align-items: flex-end;
     /* Items sit on bottom */
-    padding-bottom: 5px;
+    padding-bottom: 0.5vh;
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Shelf specific visual tweaking to look like a plank context */
+/* Shelf plank look */
 .shelf::after {
     content: '';
     position: absolute;
-    top: -5px;
+    top: -0.5vh;
     left: 0;
     right: 0;
-    height: 5px;
+    height: 0.5vh;
     background: #5c2e0b;
-    border-radius: 5px 5px 0 0;
+    border-radius: 1vmin 1vmin 0 0;
 }
 
 .item {
-    width: 120px;
-    height: 120px;
+    /* Responsive Item container */
+    height: 90%;
+    /* Fit inside shelf */
+    aspect-ratio: 1 / 1;
+    /* Keep square */
+    width: auto;
+
     cursor: pointer;
     transition: transform 0.1s cubic-bezier(0.25, 1.5, 0.5, 1);
     z-index: 2;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
-    /* Disable drag to prevent weird browser behavior */
+    filter: drop-shadow(0 0.2vh 0.2vh rgba(0, 0, 0, 0.3));
     -webkit-user-drag: none;
     display: flex;
     justify-content: center;
@@ -157,14 +158,17 @@ header {
 }
 
 .item img {
-    width: 100%;
-    height: 100%;
+    /* STRICT Image Containment */
+    width: 80%;
+    height: 80%;
     object-fit: contain;
+    max-width: 70px;
+    /* PC Constraint */
     pointer-events: none;
     display: block;
 }
 
-/* Squash Effect Class */
+/* Squash Effect */
 .squash {
     animation: squashAnim 0.3s forwards;
 }
@@ -189,28 +193,41 @@ header {
 
 /* Dock Area */
 #dock-area {
-    height: 120px;
+    height: 15%;
+    /* Percentage height */
     background: var(--dark-brown);
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
-    border-top: 5px solid var(--primary-gold);
+    padding: 1vmin;
+    border-top: 0.5vh solid var(--primary-gold);
+    border-radius: 0 0 20px 20px;
 }
 
 #dock-slots {
-    display: flex;
-    gap: 8px;
+    display: grid;
+    /* Flex instead Grid use */
+    grid-template-columns: repeat(7, 1fr);
+    /* 7 equal columns */
+    width: 96%;
+    /* Fill almost full width */
+    gap: 2px;
+    /* Min gap */
+    padding: 1vmin;
     background: rgba(255, 255, 255, 0.1);
-    padding: 10px;
     border-radius: 10px;
+    /* height determined by content */
+    align-items: center;
+    justify-items: center;
 }
 
 .slot {
-    width: 45px;
-    height: 45px;
+    /* Responsive Square Slots based on column width */
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
+    border-radius: 1vmin;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -218,11 +235,19 @@ header {
 }
 
 .slot .item {
-    width: 40px;
-    height: 40px;
+    /* Slot items fill the slot nicely */
+    height: 90%;
+    width: 90%;
 }
 
-/* Overlay */
+.slot .item img {
+    max-width: none;
+    /* Reset PC constraint for slots if needed */
+    width: 100%;
+    height: 100%;
+}
+
+/* Overlay & UI */
 #overlay {
     position: absolute;
     top: 0;
@@ -235,6 +260,7 @@ header {
     align-items: center;
     z-index: 100;
     animation: fadeIn 0.5s;
+    border-radius: 20px;
 }
 
 .hidden {
@@ -243,8 +269,8 @@ header {
 
 #message-box {
     background: var(--primary-beige);
-    padding: 40px;
-    border-radius: 10px;
+    padding: 4vmin;
+    border-radius: 2vmin;
     text-align: center;
     border: 3px solid var(--primary-gold);
     max-width: 80%;
@@ -254,18 +280,23 @@ h1 {
     color: var(--dark-brown);
     font-family: 'Playfair Display', serif;
     margin-top: 0;
+    font-size: 5vmin;
+}
+
+p {
+    font-size: 3vmin;
 }
 
 button {
     background: var(--dark-brown);
     color: var(--primary-gold);
     border: none;
-    padding: 10px 25px;
-    font-size: 1.1rem;
-    border-radius: 5px;
+    padding: 1.5vmin 4vmin;
+    font-size: 3vmin;
+    border-radius: 1vmin;
     cursor: pointer;
     font-family: 'Lato', sans-serif;
-    margin-top: 15px;
+    margin-top: 2vmin;
     transition: 0.2s;
 }
 
@@ -277,10 +308,10 @@ button:hover {
 /* Tutorial Hand */
 #tutorial-hand {
     position: absolute;
-    font-size: 3rem;
+    font-size: 8vmin;
     pointer-events: none;
     z-index: 50;
-    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0.5vh 0.5vh rgba(0, 0, 0, 0.5));
     animation: pointAnim 1.5s infinite;
 }
 
@@ -292,7 +323,7 @@ button:hover {
     }
 
     50% {
-        transform: translateY(-15px);
+        transform: translateY(-2vh);
     }
 }
 
@@ -350,8 +381,8 @@ button:hover {
 /* Particles */
 .particle {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 1.5vmin;
+    height: 1.5vmin;
     border-radius: 50%;
     pointer-events: none;
     z-index: 99;
